@@ -73,16 +73,15 @@ func init(){
 }
 
 func md5V(str string) string  {
-    file, inerr := os.Open(str)                                            
-        if inerr == nil {                                                           
-                md5h := md5.New()                                                   
-                io.Copy(md5h, file)                                                 
-				//fmt.Printf("%x", md5h.Sum([]byte(""))) //md5  
-				return hex.EncodeToString(md5h.Sum(nil))                      
-		}            
+    file, inerr := os.Open(str)
+        if inerr == nil {
+                md5h := md5.New()
+                io.Copy(md5h, file)
+				//fmt.Printf("%x", md5h.Sum([]byte(""))) //md5
+				return hex.EncodeToString(md5h.Sum(nil))
+		}
 	defer file.Close()
 	return ""
-    
 }
 
 func PathExists(path string) (bool, error) {
@@ -97,7 +96,6 @@ func PathExists(path string) (bool, error) {
 }
 
 func check_ip(ip string)*ip_table{
-	
 	if _, ok := ip_map[ip]; ok {
 		return ip_map[ip]
 	}else{
@@ -112,7 +110,6 @@ func check_ip(ip string)*ip_table{
 			temp_detectedUrl = &r.DetectedUrls[0]
 			for i,v :=range(r.DetectedUrls){
 				if v.Positives != 0{
-					
 					if v.Positives > bad{
 						bad = v.Positives
 						temp_detectedUrl = &r.DetectedUrls[i]
@@ -137,6 +134,7 @@ func check_file(file string)*file_table{
 
 	if is_exits == true{
 		md5:=md5V(file)//"c6b7544e4620fbe15316a49e937e7fd5 "//md5V(file)
+		//fmt.Println(file,md5)
 		if _, ok := file_map[md5]; ok {
 			return file_map[md5]
 		}else{
@@ -160,7 +158,7 @@ func check_file(file string)*file_table{
 					AvName = "FireEye"
 				}
 				file_map[md5]=&file_table{file:file,fileReport:r,
-					Md5:r.Md5, 
+					Md5:r.Md5,
 					Sha1:r.Sha1,
 					Sha256:r.Sha256,
 					ScanDate:r.ScanDate,
@@ -172,18 +170,14 @@ func check_file(file string)*file_table{
 				}
 				return file_map[md5]
 			}
-			
 		}
 	}
-	
 	return tem_file_table
 }
 
 
 
 func main() {
-	//getvt("192.3.247.119")
-	
 
 	if *help {
 		flag.Usage()
@@ -205,7 +199,7 @@ func main() {
 		fmt.Println("Not all processes could be identified, you would have to be root to see it all.")
 	}
 	fmt.Printf("Proto %-23s %-23s %-12s %-16s\n", "Local Addr", "Foreign Addr", "State", "PID/Program name")
-
+	fmt.Println("-----------------------------------------------")
 	if *udp {
 		if proto&protoIPv4 == protoIPv4 {
 			tabs, err := netstat.UDPSocks(netstat.NoopFilter)
@@ -289,18 +283,20 @@ func displaySockInfo(proto string, s []netstat.SockTabEntry) {
 
 			ip_table := check_ip(daddr)
 			if ip_table != nil{
-				fmt.Println("--",ip_table.IP,ip_table.resolution,ip_table.detectedUrl)
+				fmt.Println("\t----",ip_table.IP,ip_table.resolution,ip_table.detectedUrl)
 			}
 		}
 
-		pid_file :=strings.Split(p, "/")
-		if len(pid_file) ==2{
-			file_table:= check_file(pid_file[1])
+		//pid_file :=strings.Split(p, "/")
+		file_name_begin_index:=strings.Index(p, "/")
+		if file_name_begin_index != -1{
+			file_name := p[file_name_begin_index+1:]
+			file_table:= check_file(file_name)
 			if file_table!= nil{
-				fmt.Println("--",file_table.file,file_table.Md5,file_table.Positives,file_table.Total,file_table.AvName,file_table.FileScan)
+				fmt.Println("\t----",file_table.file,file_table.Md5,file_table.Positives,file_table.Total,file_table.AvName,file_table.FileScan)
 			}
 		}
-		fmt.Println("")
+		fmt.Println("-----------------------------------------------")
 
 	}
 }
@@ -308,7 +304,7 @@ func displaySockInfo(proto string, s []netstat.SockTabEntry) {
 func check(e error) {
 	//if e != nil {panic(e)}
 	if e!=nil{
-		fmt.Println(e)
+		//fmt.Println(e)
 	}
 }
 
