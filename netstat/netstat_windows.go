@@ -26,6 +26,8 @@ var (
 
 	modiphlpapi = syscall.NewLazyDLL("Iphlpapi.dll")
 	modkernel32 = syscall.NewLazyDLL("Kernel32.dll")
+	modpsapi = syscall.NewLazyDLL("Psapi.dll")
+	
 
 	procGetTCPTable2        = modiphlpapi.NewProc("GetTcpTable2")
 	procGetTCP6Table2       = modiphlpapi.NewProc("GetTcp6Table2")
@@ -33,6 +35,10 @@ var (
 	procCreateSnapshot      = modkernel32.NewProc("CreateToolhelp32Snapshot")
 	procProcess32First      = modkernel32.NewProc("Process32First")
 	procProcess32Next       = modkernel32.NewProc("Process32Next")
+	procQueryFullProcessImageNameA = modkernel32.NewProc("QueryFullProcessImageNameA")
+	procOpenProcess = modkernel32.NewProc("OpenProcess")
+	procCloseHandle = modkernel32.NewProc("CloseHandle")
+	
 )
 
 // Socket states
@@ -405,6 +411,16 @@ func (snp ProcessSnapshot) ProcPIDToName(pid uint32) string {
 	}
 	for {
 		if processEntry.Th32ProcessID == pid {
+			var size uint32
+			size =256
+			buf := make([]byte, size)
+			table := unsafe.Pointer(&buf[0])
+			QueryFullProcessImageNameA(pid,table,&size)
+			//GetProcessImageFileNameA(pid,table,&size)
+			//fmt.Println("-----",StringFromNullTerminated(processEntry.ExeFile[:]),StringFromNullTerminated(buf))
+			if buf[0] != '\x00'{
+				return StringFromNullTerminated(buf)
+			}
 			return StringFromNullTerminated(processEntry.ExeFile[:])
 		}
 		err = Process32Next(handle, &processEntry)
@@ -435,6 +451,32 @@ func Process32First(handle syscall.Handle, pe *Processentry32) error {
 		return errNoMoreFiles
 	}
 	return nil
+}
+
+func QueryFullProcessImageNameA(ProcessID uint32,tab unsafe.Pointer, size *uint32) error {
+	hProcess, err := syscall.OpenProcess(0X0400|0X0010, false, ProcessID)
+	if err != nil {
+        //fmt.Println(err)
+        return err
+	}
+	defer syscall.CloseHandle(hProcess)
+	
+	r1, _, callErr := syscall.Syscall6(
+		procQueryFullProcessImageNameA.Addr(),
+		uintptr(4),
+		uintptr(hProcess),
+		uintptr(0),
+		uintptr(tab),
+		uintptr(unsafe.Pointer(size)),
+		0,0)
+	if callErr != 0 {
+		return callErr
+	}
+	if r1 == 0 {
+		return errNoMoreFiles
+	}
+	return nil
+
 }
 
 // Process32Next retrieves information about the next process
