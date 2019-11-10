@@ -308,28 +308,4 @@ func check(e error) {
 	}
 }
 
-/*func getvt(ip string) {
-	return
-	apikey:="6b07e5931a26480af7a1d13a341775a4839f8d6140177c81015b48c5bbf77748"
-	apiurl:="https://www.virustotal.com/vtapi/v2/"
-	c, err := govt.New(govt.SetApikey(apikey), govt.SetUrl(apiurl))
-
-	check(err)
-
-	r, err := c.GetIpReport(ip)
-
-	check(err)
-
-	//j, err := json.MarshalIndent(r, "", "    ")
-
-	//check(err)
-
-	//fmt.Printf("IP Report: ")
-
-	//os.Stdout.Write(j)
-
-	fmt.Println(r.Resolutions)
-	fmt.Println(r.DetectedUrls)
-
-}*/
 
