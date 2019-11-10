@@ -23,7 +23,7 @@ var (
 	ipv4      = flag.Bool("4", false, "display only IPv4 sockets")
 	ipv6      = flag.Bool("6", false, "display only IPv6 sockets")
 	vt        =flag.Bool("vt", false, "Check ip and file md5 with virustotal")
-	vtkey     = flag.String("vtkey","6b07e5931a26480af7a1d13a341775a4839f8d6140177c81015b48c5bbf77748","Input the virustotal apikey")
+	vtkey     = flag.String("vtkey","---","Input the virustotal apikey")
 	help      = flag.Bool("help", false, "display this help screen")
 )
 
