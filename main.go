@@ -279,7 +279,7 @@ func displaySockInfo(proto string, s []netstat.SockTabEntry) {
 		if *vt ==false{
 			continue
 		}
-		if strings.HasPrefix(daddr,"10.") == false && strings.HasPrefix(daddr,"172.") == false && strings.HasPrefix(daddr,"192.") == false {
+		if strings.HasPrefix(daddr,"127.0.0.1") == false && strings.HasPrefix(daddr,"10.") == false && strings.HasPrefix(daddr,"172.") == false && strings.HasPrefix(daddr,"192.") == false {
 
 			ip_table := check_ip(daddr)
 			if ip_table != nil{
