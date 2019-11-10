@@ -59,7 +59,9 @@ var file_map map[string]*file_table
 var govt_client *govt.Client
 
 func init(){
+	flag.Parse()
 	apikey:=*vtkey
+	fmt.Println(apikey)
 	apiurl:="https://www.virustotal.com/vtapi/v2/"
 	var err error
 	govt_client, err = govt.New(govt.SetApikey(apikey), govt.SetUrl(apiurl))
@@ -181,7 +183,7 @@ func check_file(file string)*file_table{
 
 func main() {
 	//getvt("192.3.247.119")
-	flag.Parse()
+	
 
 	if *help {
 		flag.Usage()
@@ -283,11 +285,13 @@ func displaySockInfo(proto string, s []netstat.SockTabEntry) {
 		if *vt ==false{
 			continue
 		}
-		ip_table := check_ip(daddr)
-		if ip_table != nil{
-			fmt.Println("--",ip_table.IP,ip_table.resolution,ip_table.detectedUrl)
-		}
+		if strings.HasPrefix(daddr,"10.") == false && strings.HasPrefix(daddr,"172.") == false && strings.HasPrefix(daddr,"192.") == false {
 
+			ip_table := check_ip(daddr)
+			if ip_table != nil{
+				fmt.Println("--",ip_table.IP,ip_table.resolution,ip_table.detectedUrl)
+			}
+		}
 
 		pid_file :=strings.Split(p, "/")
 		if len(pid_file) ==2{
