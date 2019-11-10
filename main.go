@@ -10,7 +10,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 
-	"github.com/cakturk/go-netstat/netstat"
+	"github.com/haysengithub/go-netstat/netstat"
 	"github.com/williballenthin/govt"
 )
 
