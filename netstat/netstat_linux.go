@@ -192,7 +192,7 @@ func (p *procFd) iterFdDir() {
 	if err != nil {
 		return
 	}
-	var buf [128]byte
+	//var buf [128]byte
 
 	for _, file := range fi {
 		fd := path.Join(fddir, file.Name())
@@ -208,6 +208,11 @@ func (p *procFd) iterFdDir() {
 				continue
 			}
 			if p.p == nil {
+				name,errname:=os.Readlink(path.Join(p.base,"exe"))
+				if errname !=nil{
+					return
+				}
+				/*
 				stat, err := os.Open(path.Join(p.base, "stat"))
 				if err != nil {
 					return
@@ -218,7 +223,7 @@ func (p *procFd) iterFdDir() {
 					return
 				}
 				z := bytes.SplitN(buf[:n], []byte(" "), 3)
-				name := getProcName(z[1])
+				name := getProcName(z[1])*/
 				p.p = &Process{p.pid, name}
 			}
 			sk.Process = p.p
